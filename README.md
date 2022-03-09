@@ -17,9 +17,17 @@ import (
 func main() {
 	r := gin.Default()
 	r.SetTrustedProxies(nil) // No proxy used
-	r.Use(webdav.Serve("/fs/", "/home/fang/test/", func(req *http.Request, err error) {
-		log.Println(req.URL.Path, err)
-	}))
+	r.Use(webdav.Serve(
+		"/fs/",
+		"/home/fang/test/",
+		func(c *gin.Context) bool {
+			// Anyone can access webdav server
+			return true
+		},
+		func(req *http.Request, err error) {
+			log.Println(req.URL.Path, err)
+		},
+	))
 	r.GET("/", func(c *gin.Context) {
 		c.String(200, "")
 	})
